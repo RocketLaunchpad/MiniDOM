@@ -122,12 +122,18 @@ public class SAXParser: SAXConsumer {
      - parameter filter: Given an element name and attributes, return `true` to parse and invoke `callback` for this element.
      Adds the given consumer to the list of objects that receive callbacks during parsing.
      */
-    public func streamElements(to callback: @escaping (Element) throws -> Bool, filter: @escaping (String) -> Bool) {
+    public func streamElements(to callback: @escaping (Element) throws -> Bool, filter: @escaping (String) -> Bool) throws {
         guard stream.streamStatus != .closed else {
             return
         }
-        add(consumer: ElementStream(callback: callback, filter: filter))
+
+        let consumer = ElementStream(callback: callback, filter: filter)
+        add(consumer: consumer)
         parse()
+
+        if let error = consumer.error {
+            throw error
+        }
     }
 
     /**

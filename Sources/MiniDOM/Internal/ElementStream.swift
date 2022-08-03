@@ -31,6 +31,7 @@ class ElementStream: SAXConsumer {
     let filter: (String) -> Bool
 
     private(set) var continueParsing = true
+    private(set) var error: Error?
 
     private let log = Log(level: .warn)
     private var stacks: ArraySlice<NodeStack> = []
@@ -63,6 +64,7 @@ class ElementStream: SAXConsumer {
             try stacks.last?.append(node: Element(tagName: elementName, attributes: attributes))
         }
         catch {
+            self.error = error
             continueParsing = false
         }
     }
@@ -84,6 +86,7 @@ class ElementStream: SAXConsumer {
                 }
             }
             catch {
+                self.error = error
                 continueParsing = false
             }
         }
@@ -94,6 +97,7 @@ class ElementStream: SAXConsumer {
             try stacks.last?.append(string: string, nodeType: Text.self)
         }
         catch {
+            self.error = error
             continueParsing = false
         }
     }
@@ -104,6 +108,7 @@ class ElementStream: SAXConsumer {
             try stacks.last?.append(node: ProcessingInstruction(target: target, data: data))
         }
         catch {
+            self.error = error
             continueParsing = false
         }
     }
@@ -114,6 +119,7 @@ class ElementStream: SAXConsumer {
             try stacks.last?.append(node: Comment(text: comment))
         }
         catch {
+            self.error = error
             continueParsing = false
         }
     }
@@ -124,6 +130,7 @@ class ElementStream: SAXConsumer {
             try stacks.last?.append(string: CDATAString, nodeType: CDATASection.self)
         }
         catch {
+            self.error = error
             continueParsing = false
         }
     }

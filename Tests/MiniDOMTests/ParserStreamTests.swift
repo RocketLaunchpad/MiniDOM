@@ -47,12 +47,12 @@ class ParserStreamTests: XCTestCase {
         "</foo>"
     ].joined(separator: "\n").data(using: .utf8)!
 
-    func testFullElementStream() {
+    func testFullElementStream() throws {
         let parser = SAXParser(data: sourceData)
 
         var elements = [Element]()
 
-        parser.streamElements { element in
+        try parser.streamElements { element in
             elements.append(element)
             return true
         } filter: {
@@ -67,12 +67,12 @@ class ParserStreamTests: XCTestCase {
         XCTAssertEqual(elements[2].tagName, "foo")
     }
 
-    func testPartialElementStream() {
+    func testPartialElementStream() throws {
         let parser = SAXParser(data: sourceData)
 
         var foundElement: Element?
 
-        parser.streamElements { element in
+        try parser.streamElements { element in
             foundElement = element
             return false
         } filter: {
